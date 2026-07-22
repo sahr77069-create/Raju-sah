@@ -1,0 +1,33 @@
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+import os
+
+# Generate a 32-byte AES-256 key
+key = get_random_bytes(32)
+
+# Save the key
+with open("secret.key", "wb") as key_file:
+    key_file.write(key)
+
+print("Encryption key saved as secret.key")
+
+# File to encrypt
+filename = input("Enter file name to encrypt: ")
+
+with open(filename, "rb") as f:
+    data = f.read()
+
+# Create cipher
+cipher = AES.new(key, AES.MODE_EAX)
+
+ciphertext, tag = cipher.encrypt_and_digest(data)
+
+encrypted_file = filename + ".enc"
+
+with open(encrypted_file, "wb") as f:
+    f.write(cipher.nonce)
+    f.write(tag)
+    f.write(ciphertext)
+
+print(f"\nFile encrypted successfully.")
+print(f"Encrypted file: {encrypted_file}")
